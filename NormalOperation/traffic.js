@@ -10,21 +10,49 @@ var timeLeft = [];
 var signal = [];
 var tot = 0;
 var visited = [];
-function loadPage() {
+var iter, totalIterations;
+function loadPage(iteration) {
+	timeForSignal = [];
+	timePerSignal = [];
+	timeSignal = [];
+	timeSorted = [];
+	timeReady = [];
+	timeLeft = [];
+	signal = [];
+	tot = 0;
+	visited = [];
 	var signalName = document.getElementById("junction").value;
-	var iteration = 1;
+	iter = iteration;
 	$.ajax({
 		type : 'post',
 		url : 'traffic.php',
 	    datatype : 'json',
 		data : "signalName=" + signalName + "&iteration=" + iteration,
 		success : function(response) {
-			console.log(response);
-
+			keepgoing = false;
 			for(var i = 0; i < response.length; i++) {
 				var id = (i + 1) + "";
 				var video = document.getElementById(id);
 				video.src = response[i].videoFeed;
+			}
+			totalIterations = response[0].totalIterations;
+			if(response.length == 3) {
+				document.getElementById("signal_4").style.display = "none";
+				document.getElementById("signal_3").style.width = "31%";
+				document.getElementById("signal_2").style.width = "31%";
+				document.getElementById("signal_1").style.width = "31%";
+				document.getElementById("signal3").style.width = "25%";
+				document.getElementById("signal2").style.width = "25%";
+				document.getElementById("signal1").style.width = "25%";
+			}
+			else {
+				document.getElementById("signal_4").style.display = "block";
+				document.getElementById("signal_3").style.width = "23%";
+				document.getElementById("signal_2").style.width = "23%";
+				document.getElementById("signal_1").style.width = "23%";
+				document.getElementById("signal3").style.width = "36%";
+				document.getElementById("signal2").style.width = "36%";
+				document.getElementById("signal1").style.width = "36%";
 			}
 			//document.getElementById("signal_1_circle1").style.fill = "transparent";
 			/*if(response.length == 3) {
@@ -34,14 +62,6 @@ function loadPage() {
 				checkDensitie(response[0].videoFeed, response[1].videoFeed, response[2].videoFeed, response[3].videoFeed);
 			}*/
 			//Finding Maximum density
-			var max = response[0].density, maxpos = 0;
-			for(var i = 1; i < response.length; i++) {
-				if(response[i].density > max){
-					max = response[i].density;
-					maxpos = i;
-				}
-			}
-
 			for(var i = 0; i < response.length; i++) {
 				var timeValue = Math.round(response[i].density * 60 + 5);
 				if(timeValue < 10)
@@ -53,7 +73,6 @@ function loadPage() {
 				timeSignal.push(timeValue);
 				signal.push(i + 1);
 			}
-			console.log(timeSorted);
 			for(var i = 0; i < timeForSignal.length; i++) {
 				for(var j = 0; j < timeForSignal.length; j++){
 					if(timeForSignal[i] > timeForSignal[j]) {
@@ -69,7 +88,6 @@ function loadPage() {
 					}
 				}
 			}
-			//timeForSignal.sort(function(a, b){return b - a});
 			for(var i = timeForSignal.length - 1; i > 0; i--) {
 				var value = timeSignal[i];
 				for(var j = i - 1; j >= 0; j--) {
@@ -97,11 +115,7 @@ function loadPage() {
 			for(var i = 0; i < timeSorted.length; i++) {
 				timeReady.push(timeSorted[i]);
 			}
-			setSignal(maxpos + 1);
-			console.log(timeSorted);
-			console.log(timeForSignal);
-			console.log(timeLeft);
-			console.log(signal);
+			setSignal(signal[0]);
 			startTimer();
 		}
 	});
@@ -272,7 +286,6 @@ function getNextSignal(i) {
 		}
 	}
 	if(visitedAllOrNot() == 1) {
-		alert("visited all!");
 		for(var j = 1; j <= signal.length; j++) {
 			var id1 = "signal_" + j + "_circle1";
 			var id2 = "signal_" + j + "_circle2";
@@ -280,10 +293,15 @@ function getNextSignal(i) {
 			document.getElementById(id2).style.fill = "transparent";
 		}
 		alert("This iteration is over!!");
+		if(iter < totalIterations) {
+			loadPage(iter + 1);
+		}
+		else {
+			alert("Iterations over!!");
+		}
 	}
 	else {
 		timeSorted[next - 1] = timePerSignal[next - 1];
-		console.log(timeSorted);
 		setSignal(next);
 		startTimer();
 	}
@@ -331,9 +349,9 @@ function setReadySignal() {
 		document.getElementById("signal_" + next + "_circle2").style.fill = "yellow";
 		document.getElementById("signal_" + next + "_circle3").style.fill = "transparent";
 		for(var i = 0; i < signal.length; i++) {
-			if(i == currentSignal)
+			if(i == currentSignal - 1)
 				continue;
-			else if(i == next)
+			else if(i == next - 1)
 				continue;
 			else {
 				timeReady[i] = timeSorted[i] - timeSorted[currentSignal - 1] + 3;

@@ -5,7 +5,7 @@ include 'connection.php';
 $trafficSignalName = $_POST['signalName'];
 $iteration = $_POST['iteration'];
 
-$query = "SELECT t.trafficSignalId, v.videoFeed, v.density FROM video v, trafficSignal t, junction j where t.videoFeedId = v.videoFeedId and t.iteration = v.iteration and t.iteration = $iteration and j.junctionName = '".$trafficSignalName."' and t.junctionId = j.junctionId;";
+$query = "SELECT t.trafficSignalId, v.videoFeed, v.density, j.totalIterations FROM video v, trafficSignal t, junction j where t.videoFeedId = v.videoFeedId and t.iteration = v.iteration and t.iteration = $iteration and j.junctionName = '".$trafficSignalName."' and t.junctionId = j.junctionId;";
 $val = mysqli_query($db, $query);
 
 if(!$val) {
