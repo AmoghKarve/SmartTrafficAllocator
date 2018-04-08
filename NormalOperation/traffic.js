@@ -5,6 +5,7 @@ var timeForSignal = [];
 var timePerSignal = [];
 var timeSignal = [];
 var timeSorted = [];
+var timeReady = [];
 var timeLeft = [];
 var signal = [];
 var tot = 0;
@@ -93,6 +94,9 @@ function loadPage() {
 			for(var i = 0; i < signal.length; i++) {
 				timeSorted[signal[i] - 1] = timeForSignal[i];
 			}
+			for(var i = 0; i < timeSorted.length; i++) {
+				timeReady.push(timeSorted[i]);
+			}
 			setSignal(maxpos + 1);
 			console.log(timeSorted);
 			console.log(timeForSignal);
@@ -102,7 +106,7 @@ function loadPage() {
 		}
 	});
 }
-var keepgoing = true;
+var keepgoing = true, readystate = false;
 function startTimer() {
 	keepgoing = true;
 	var start = new Date();
@@ -113,21 +117,35 @@ function startTimer() {
 	var ts = [];
 
 	var $worked = $("#timer_1");
-	ts[1] = timeSorted[0] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+	if(readystate)
+		ts[1] = timeReady[0] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+	else
+		ts[1] = timeSorted[0] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
 	$worked.html(ts[1]);
 
 	$worked = $("#timer_2");
-	ts[1] = timeSorted[1] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+	if(readystate)
+		ts[1] = timeReady[1] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+	else {
+		ts[1] = timeSorted[1] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+	}
 	$worked.html(ts[1]);
 
 	$worked = $("#timer_3");
-	ts[1] = timeSorted[2] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+	if(readystate)
+		ts[1] = timeReady[2] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+	else {
+		ts[1] = timeSorted[2] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+	}
 	$worked.html(ts[1]);
 
 	if(timeForSignal.length > 3) {
 		$worked = $("#timer_4");
-		ts[1] = timeSorted[3] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
-		$worked.html(ts[1]);
+		if(readystate)
+			ts[1] = timeReady[3] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		else {
+			ts[1] = timeSorted[3] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		}		$worked.html(ts[1]);
 	}
 
 	if(keepgoing)
@@ -136,45 +154,90 @@ function startTimer() {
 var w;
 function updateTimer() {
 	while(1){
+		var flag = 0;
 		var myTime = new Date(localStorage.getItem("start"));
 		var dt = new Date();
 		var ts = [];
 		var $worked = $("#timer_1");
-		ts[1] = timeSorted[0] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		if(readystate)
+			ts[1] = timeReady[0] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		else {
+			ts[1] = timeSorted[0] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		}
 		$worked.html(ts[1]);
-		if(ts[1] == 0 && currentSignal == 1) {
-			keepgoing = false;
-			var next = 1;
-			visited[0] = 1;
-		}/*
-		else if(ts[1] == 3) {
-			keepgoing = false;
-			var num = 1;
-		}*/
+		if(currentSignal == 1) {
+			if(ts[1] == 0) {
+				keepgoing = false;
+				var next = 1;
+				visited[0] = 1;
+			}
+			else if(ts[1] == 3) {
+				readystate = true;
+				keepgoing = false;
+				visited[0] = 1;
+				flag = 1;
+			}
+		}
 		$worked = $("#timer_2");
-		ts[1] = timeSorted[1] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		if(readystate)
+			ts[1] = timeReady[1] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		else {
+			ts[1] = timeSorted[1] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		}
 		$worked.html(ts[1]);
-		if(ts[1] == 0 && currentSignal == 2) {
-			keepgoing = false;
-			var next = 2;
-			visited[1] = 1;
+		if(currentSignal == 2) {
+			if(ts[1] == 0) {
+				keepgoing = false;
+				var next = 2;
+				visited[1] = 1;
+			}
+			else if(ts[1] == 3) {
+				readystate = true;
+				keepgoing = false;
+				visited[1] = 1;
+				flag = 1;
+			}
 		}
 		$worked = $("#timer_3");
-		ts[1] = timeSorted[2] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		if(readystate)
+			ts[1] = timeReady[2] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		else {
+			ts[1] = timeSorted[2] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+		}
 		$worked.html(ts[1]);
-		if(ts[1] == 0 && currentSignal == 3) {
-			keepgoing = false;
-			var next = 3;
-			visited[2] = 1;
+		if(currentSignal == 3) {
+			if(ts[1] == 0) {
+				keepgoing = false;
+				var next = 3;
+				visited[2] = 1;
+			}
+			else if(ts[1] == 3) {
+				readystate = true;
+				keepgoing = false;
+				visited[2] = 1;
+				flag = 1;
+			}
 		}
 		if(timeForSignal.length > 3) {
 			$worked = $("#timer_4");
-			ts[1] = timeSorted[3] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+			if(readystate)
+				ts[1] = timeReady[3] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+			else {
+				ts[1] = timeSorted[3] - (dt.getHours()*3600 - myTime.getHours()* 3600 + dt.getMinutes()*60 - myTime.getMinutes()*60 + dt.getSeconds() - myTime.getSeconds());
+			}
 			$worked.html(ts[1]);
-			if(ts[1] == 0 && currentSignal == 4) {
-				keepgoing = false;
-				var next = 4;
-				visited[3] = 1;
+			if(currentSignal == 4) {
+				if(ts[1] == 0) {
+					keepgoing = false;
+					var next = 4;
+					visited[3] = 1;
+				}
+				else if(ts[1] == 3) {
+					readystate = true;
+					keepgoing = false;
+					visited[3] = 1;
+					flag = 1;
+				}
 			}
 		}
 		break;
@@ -183,18 +246,23 @@ function updateTimer() {
 		w = setTimeout(updateTimer, 1000);
 	}
 	else {
-		getNextSignal(next);
+		if(flag == 0)
+			getNextSignal(next);
+		else {
+			flag = 0;
+			setReadySignal();
+		}
 	}
 }
 var currentSignal;
 function getNextSignal(i) {
+	readystate = 0;
 	for(var j = 0; j < timeSorted.length; j++) {
 		if(j != i - 1) {
 			timeSorted[j] = timeSorted[j] - timeSorted[i - 1];
 		}
 	}
 	timeSorted[i - 1] = timeLeft[i - 1];
-	console.log("hi");
 
 	var next;
 	for(var j = 0; j < signal.length; j++) {
@@ -203,8 +271,16 @@ function getNextSignal(i) {
 			break;
 		}
 	}
-	if(visitedAllOrNot() == 1)
+	if(visitedAllOrNot() == 1) {
+		alert("visited all!");
+		for(var j = 1; j <= signal.length; j++) {
+			var id1 = "signal_" + j + "_circle1";
+			var id2 = "signal_" + j + "_circle2";
+			document.getElementById(id1).style.fill = "red";
+			document.getElementById(id2).style.fill = "transparent";
+		}
 		alert("This iteration is over!!");
+	}
 	else {
 		timeSorted[next - 1] = timePerSignal[next - 1];
 		console.log(timeSorted);
@@ -238,6 +314,45 @@ function setSignal(i) {
 	}
 }
 function setReadySignal() {
+	document.getElementById("signal_" + currentSignal + "_circle1").style.fill = "transparent";
+	document.getElementById("signal_" + currentSignal + "_circle2").style.fill = "yellow";
+	document.getElementById("signal_" + currentSignal + "_circle3").style.fill = "transparent";
+	timeReady[currentSignal - 1] = 3;
+	var next;
+	for(var j = 0; j < signal.length; j++) {
+		if(signal[j] == currentSignal && j != signal.length - 1) {
+			next = signal[j + 1];
+			break;
+		}
+	}
+	if(visitedAllOrNot() != 1) {
+		timeReady[next - 1] = 3;
+		document.getElementById("signal_" + next + "_circle1").style.fill = "transparent";
+		document.getElementById("signal_" + next + "_circle2").style.fill = "yellow";
+		document.getElementById("signal_" + next + "_circle3").style.fill = "transparent";
+		for(var i = 0; i < signal.length; i++) {
+			if(i == currentSignal)
+				continue;
+			else if(i == next)
+				continue;
+			else {
+				timeReady[i] = timeSorted[i] - timeSorted[currentSignal - 1] + 3;
+			}
+		}
+		startTimer();
+	}
+	else {
+		for(var j = 1; j <= signal.length; j++) {
+			var id1 = "signal_" + j + "_circle1";
+			var id2 = "signal_" + j + "_circle2";
+			var id3 = "signal_" + j + "_circle3";
+			document.getElementById(id1).style.fill = "transparent";
+			document.getElementById(id2).style.fill = "yellow";
+			document.getElementById(id3).style.fill = "transparent";
+			timeReady[j - 1] = 3;
+		}
+		startTimer();
+	}
 
 }
 function checkDensities(){
