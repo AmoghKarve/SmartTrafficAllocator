@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>traffic</title>
+		<script src = "traffic.js"></script>
+		<script src = "jquery-1.11.1.min.js"></script>
+		<link rel = "stylesheet" type = "text/css" href = "traffic.css">
+	</head>
+	<body>
+		<div class = "details">
+			<input type = "text" class = "ip" name = "junction" id = "junction" placeholder = "Enter Junction Name" value = "">&emsp;&emsp;
+			<input type = "submit" class = "reg" name = "submit" id = "submit" value = "Go to junction" onclick = "loadPage()">
+		</div>
+		<br>
+		<div class = "d1">
+			<div class = "div1" id = "signal_1">
+				<h3 class = "timer" id = "timer_1">60</h3>
+				<br><br>
+				<div class = "signal">
+					<svg id="svg1" style="width: 3.5in; height: 1in">
+        				<circle id="signal_1_circle1" r="40" cx="50" cy="50" style="fill: red; stroke: black; stroke-width: 2"/>
+    				</svg>
+    				<svg id="svg2" style="width: 3.5in; height: 1in">
+        				<circle id="signal_1_circle2" r="40" cx="50" cy="50" style="fill: transparent; stroke: black; stroke-width: 2"/>
+    				</svg>
+    				<svg id="svg3"style="width: 3.5in; height: 1in">
+        				<circle id="signal_1_circle3" r="40" cx="50" cy="50" style="fill: transparent; stroke: black; stroke-width: 2"/>
+    				</svg>
+				</div>
+				<video id = "1" width="300" height="240" controls>
+					<source src = "video/cctv052x2004080518x01672.mp4" type="video/mp4">
+				</video>
+			</div>
+			<div class = "div1" id = "signal_2">
+				<h3 class = "timer" id = "timer_2">60</h3>
+				<br><br>
+				<div class = "signal">
+					<svg id="svg1" style="width: 3.5in; height: 1in">
+	        			<circle id="signal_2_circle1" r="40" cx="50" cy="50" style="fill: red; stroke: black; stroke-width: 2"/>
+	    			</svg>
+	    			<svg id="svg2" style="width: 3.5in; height: 1in">
+	        			<circle id="signal_2_circle2" r="40" cx="50" cy="50" style="fill: transparent; stroke: black; stroke-width: 2"/>
+	    			</svg>
+	    			<svg id="svg3"style="width: 3.5in; height: 1in">
+	        			<circle id="signal_2_circle3" r="40" cx="50" cy="50" style="fill: transparent; stroke: black; stroke-width: 2"/>
+	    			</svg>
+				</div>
+				<video id = "2" width="300" height="240" controls>
+					<source src = "video/cctv052x2004080518x01672.mp4" type="video/mp4">
+				</video>
+			</div>
+			<div class = "div1" id = "signal_3">
+				<h3 class = "timer" id = "timer_3">60</h3>
+				<br><br>
+				<div class = "signal">
+					<svg id="svg1" style="width: 3.5in; height: 1in">
+	        			<circle id="signal_3_circle1" r="40" cx="50" cy="50" style="fill: red; stroke: black; stroke-width: 2"/>
+	    			</svg>
+	    			<svg id="svg2" style="width: 3.5in; height: 1in">
+	        			<circle id="signal_3_circle2" r="40" cx="50" cy="50" style="fill: transparent; stroke: black; stroke-width: 2"/>
+	    			</svg>
+	    			<svg id="svg3"style="width: 3.5in; height: 1in">
+	        			<circle id="signal_3_circle3" r="40" cx="50" cy="50" style="fill: transparent; stroke: black; stroke-width: 2"/>
+	    			</svg>
+				</div>
+				<video id = "3" width="300" height="240" controls>
+					<source src = "video/cctv052x2004080518x01672.mp4" type="video/mp4">
+				</video>
+			</div>
+			<div class = "div1" id = "signal_4">
+				<h3 class = "timer" id = "timer_4">60</h3>
+				<br><br>
+				<div class = "signal">
+					<svg id="svg1" style="width: 3.5in; height: 1in">
+	        			<circle id="signal_4_circle1" r="40" cx="50" cy="50" style="fill: red; stroke: black; stroke-width: 2"/>
+	    			</svg>
+	    			<svg id="svg2" style="width: 3.5in; height: 1in">
+	        			<circle id="signal_4_circle2" r="40" cx="50" cy="50" style="fill: transparent; stroke: black; stroke-width: 2"/>
+	    			</svg>
+	    			<svg id="svg3"style="width: 3.5in; height: 1in">
+	        			<circle id="signal_4_circle3" r="40" cx="50" cy="50" style="fill: transparent; stroke: black; stroke-width: 2"/>
+	    			</svg>
+				</div>
+				<video id = "4" width="300" height="240" controls>
+					<source src = "video/cctv052x2004080518x01672.mp4" type="video/mp4">
+				</video>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,50 @@
+.div1 {
+	width : 23%;
+	float : left;
+	margin : 1%;
+	vertical-align : middle;
+}
+
+.d1 {
+	border : 1px solid black;
+	width : 100%;
+}
+
+.signal {
+	border : 1px solid black;
+	margin : 0 auto;
+	width : 36%;
+}
+
+.timer {
+	text-align : center;
+	font-size : 25px;
+	border : 1px solid black;
+	width : 20%;
+	margin : 0 auto;
+}
+
+.ip {
+	width : 300px;
+	height : 35px;
+	font-size : 18pt;
+}
+
+.details {
+	border : 1px solid black;
+	padding : 10px 0px;
+	width : 100%;
+	text-align : center;
+}
+
+.reg{
+	background-color : #3498DB;
+	width : 300px;
+	font-size : 18pt;
+	height : 40px;
+	color : #fff;
+}
+.reg:hover{
+	color : #fff;
+	background-color : #1B4F72;
+}
