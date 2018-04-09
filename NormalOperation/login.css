@@ -1,0 +1,114 @@
+body{
+	padding-top : 25px;
+	background-color : #D6EAF8;
+    background-size: cover;
+}
+.c1 li{
+	font-size : 15pt;
+}
+.d1{
+	width : 100%;
+	text-align : center;
+}
+.d2{
+	background-color : #fff;
+	overflow-y: auto;
+	height: 450px;
+	/*border:1px solid black;*/
+}
+.d3{
+	width : 75%;
+	margin-left : -10px;
+	padding : 0 50px 0 160px;
+}
+.d4{
+	background-color : #fff;
+	overflow-y: auto;
+	height: 450px;
+	float: left;
+	margin: 1%;
+	padding-right: 30px;
+	width: 45%;
+	/*border:1px solid black;*/
+}
+.login-form{
+	padding-bottom : 25px;
+	padding-top : 25px;
+	display : inline-block;
+}
+.submit-squad{
+	padding-bottom : 25px;
+	padding-top : 25px;
+	display : inline-block;
+	float : right;
+	height : 25%;
+	visibility : hidden;
+}
+.ip{
+	width : 435px;
+	height : 40px;
+	font-size : 18pt;
+}
+.reg{
+	background-color : #008000;
+	width : 300px;
+	font-size : 32px;
+	height : 55px;
+	color : #fff;
+}
+.reg:hover{
+	color : #fff;
+	background-color : #008080;
+}
+.reg1{
+	background-color : #008000;
+	width : 500px;
+	font-size : 32px;
+	height : 55px;
+	color : #fff;
+}
+.reg1:hover{
+	color : #fff;
+	background-color : #008080;
+}
+.para{
+	color : #17202A;
+	font-size : 18pt;
+	text-align : left;
+}
+.btn-skip{
+	background-color : #008000;
+	font-size: 20px;
+	height: auto;
+	width: 50px;
+	color : #fff;
+	padding: 14px 0;
+	margin-right: 20px;
+	margin-left: 20px;
+	margin-top: 20px;
+	visibility: hidden;
+}
+
+.btn-skip:hover{
+	color : #fff;
+	background-color : #008080;
+}
+
+.btn-next{
+	background-color : #008000;
+	font-size: 20px;
+	height: auto;
+	width: 50px;
+	float: right;
+	color : #fff;
+	text-align : center;
+	padding: 14px 0;
+	margin-right: 20px;
+	margin-top: -57px;
+}
+
+.btn-next:hover{
+	color : #fff;
+	background-color : #008080;
+}
+	

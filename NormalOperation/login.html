@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Smart Traffic Switching - Login</title>
+		<meta charset = "UTF-8">
+		<meta name = "viewport" content = "width=device-width, initial-scale = 1.0">		
+		<link href = "login.css" rel = "stylesheet">
+		<script src = "jquery-1.11.1.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src = "login.js"></script>
+	</head>
+	<body>
+		<div class = "d1">
+			<h1 text-align = 'center' style = "color : #008000; font-size : 40pt;">SMART TRAFFIC SWITCHING</h1>
+			<h3 text-align = 'center' style = "font-size : 25pt; color : #008000;">LOGIN</h3>
+		<form method = 'POST' action = 'login.php'>
+			<!---<form>--->
+			<div class = "login-form">
+				<input type = "text" class = "ip" name = "teamname" id = "teamname" tabindex = "1" placeholder = "Username" >
+			</div>
+			<br>
+			<div class = "login-form">
+				<input type = "password" class = "ip" name = "p1name" id = "p1name" tabindex = "1" placeholder = "Password" >
+			</div>
+			<br>
+			<div class = "login-form">
+				<input type = "submit" class = "reg"  name = "register-submit" id = "submit" tabindex = "1" value = "LOGIN" onclick = "checkDetails()">
+			</div>
+		</form>
+		<!---	</form>--->
+		</div>
+	</body>
+</html>
