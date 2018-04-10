@@ -38,7 +38,7 @@
 }
 
 .reg{
-	background-color : #3498DB;
+	background-color : #008000;
 	width : 300px;
 	font-size : 18pt;
 	height : 40px;
@@ -46,5 +46,18 @@
 }
 .reg:hover{
 	color : #fff;
-	background-color : #1B4F72;
+	background-color : #008080;
+}
+.logout{
+	background-color : #008000;
+	width : 150px;
+	margin-top : -72px;
+	font-size : 15pt;
+	height : 30px;
+	color : #fff;
+	float : right;
+}
+.logout:hover{
+	color : #fff;
+	background-color : #008080;
 }

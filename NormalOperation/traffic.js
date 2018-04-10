@@ -11,6 +11,10 @@ var signal = [];
 var tot = 0;
 var visited = [];
 var iter, totalIterations;
+
+function logout() {
+	window.location = "login.html";
+}
 function loadPage(iteration) {
 	timeForSignal = [];
 	timePerSignal = [];
