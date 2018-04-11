@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Directions service</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="floating-panel">
+    <b>Start: </b>
+    <select id="start">
+      <option value="chicago, il">Chicago</option>
+      <option value="st louis, mo">St Louis</option>
+      <option value="joplin, mo">Joplin, MO</option>
+      <option value="oklahoma city, ok">Oklahoma City</option>
+      <option value="amarillo, tx">Amarillo</option>
+      <option value="gallup, nm">Gallup, NM</option>
+      <option value="flagstaff, az">Flagstaff, AZ</option>
+      <option value="winona, az">Winona</option>
+      <option value="kingman, az">Kingman</option>
+      <option value="barstow, ca">Barstow</option>
+      <option value="san bernardino, ca">San Bernardino</option>
+      <option value="los angeles, ca">Los Angeles</option>
+    </select>
+    <b>End: </b>
+    <select id="end">
+      <option value="chicago, il">Chicago</option>
+      <option value="st louis, mo">St Louis</option>
+      <option value="joplin, mo">Joplin, MO</option>
+      <option value="oklahoma city, ok">Oklahoma City</option>
+      <option value="amarillo, tx">Amarillo</option>
+      <option value="gallup, nm">Gallup, NM</option>
+      <option value="flagstaff, az">Flagstaff, AZ</option>
+      <option value="winona, az">Winona</option>
+      <option value="kingman, az">Kingman</option>
+      <option value="barstow, ca">Barstow</option>
+      <option value="san bernardino, ca">San Bernardino</option>
+      <option value="los angeles, ca">Los Angeles</option>
+    </select>
+    </div>
+    <div id="map"></div>
+    <script>
+
+      var directionsDisplay;
+      var directionsService;
+      let polyline;
+      var allSignals = [{"latitude":18.55041,"longitude":73.8096},{"latitude":18.5493,"longitude":73.8117},{"latitude":18.516726,"longitude":73.856255},{"latitude":18.5300,"longitude":73.8531}];
+      var ambulanceLatitude = 18.5603;
+      var ambulanceLongitude = 73.8092;
+      var thresholdTime = 200;
+      let map;
+
+
+      function initMap() {
+        directionsService = new google.maps.DirectionsService;
+        directionsDisplay = new google.maps.DirectionsRenderer;
+        polyline = new google.maps.Polyline({
+          path: []
+        });
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 7,
+          center: {lat: 41.85, lng: -87.65}
+        });
+        directionsDisplay.setMap(map);
+
+        var onChangeHandler = function() {
+          calculateAndDisplayRoute(directionsService, directionsDisplay,'kalpataru estate,pimple gurav','sancheti');
+          updateSignals();
+        };
+        document.getElementById('start').addEventListener('change', onChangeHandler);
+        document.getElementById('end').addEventListener('change', onChangeHandler);
+      }
+
+      function addMarker(location, map,override) {
+        // Add the marker at the clicked location, and add the next-available label
+        // from the array of alphabetical characters.
+        if(override == 1){
+          var marker = new google.maps.Marker({
+            position: location,
+            label: "Signal Override",
+            map: map
+          });
+        }else {
+          var marker = new google.maps.Marker({
+            position: location,
+            label: "Normal operation",
+            map: map
+          });
+        }
+
+      }
+
+      function calculateAndDisplayRoute(directionsService, directionsDisplay,start,end) {
+        directionsService.route({
+          origin: start,
+          destination: end,
+          travelMode: 'DRIVING'
+        }, function(response, status) {
+          if (status === 'OK') {
+
+          var bounds = new google.maps.LatLngBounds();
+          var legs = response.routes[0].legs;
+          for (i = 0; i < legs.length; i++) {
+            var steps = legs[i].steps;
+            for (j = 0; j < steps.length; j++) {
+              var nextSegment = steps[j].path;
+              for (k = 0; k < nextSegment.length; k++) {
+                polyline.getPath().push(nextSegment[k]);
+                bounds.extend(nextSegment[k]);
+              }
+            }
+          }
+          directionsDisplay.setDirections(response);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        });
+      }
+      var hospital;
+      function getRoute(){
+        var source = 'shirine garden';
+        var destination = 'sancheti';
+        calculateAndDisplayRoute(directionsService,directionsDisplay,source,destination);
+      }
+
+      function updateSignals(){
+        let length = Object.keys(allSignals).length;
+        let estimatedTime = [];
+        for(i = 0;i < length;i++){
+          let estimatedTime = 1000;
+          let myPosition = new google.maps.LatLng(allSignals[i]['latitude'],allSignals[i]['longitude']);
+          console.log(google.maps.geometry.poly.isLocationOnEdge(myPosition, polyline,100));
+          if(1 === 1) {
+            let origin = new google.maps.LatLng( ambulanceLatitude, ambulanceLongitude ); // using google.maps.LatLng class
+            let myDestination = new google.maps.LatLng(allSignals[i]['latitude'],allSignals[i]['longitude']); // using string
+
+            let directionsService = new google.maps.DirectionsService();
+            let request = {
+              origin: origin, // LatLng|string
+              destination: myDestination, // LatLng|string
+              travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };
+            let estimatedTime;
+            let routeIt = function () {
+              return new Promise (function(resolve, reject) {
+                  directionsService.route( request, function( response, status ) {
+                    if ( status === 'OK' ) {
+                      let point = response.routes[ 0 ].legs[ 0 ];
+                      estimatedTime = (point.duration.value);
+                      result = {
+                        point, estimatedTime
+                      }
+                      console.log("There " + result.toString());
+                      resolve(result);
+                    }
+                    else {
+                      reject(status)
+                    }
+                  });
+              });
+            }
+            routeIt().then(
+            function (results) {
+              if(estimatedTime < thresholdTime){
+              addMarker(myDestination,map,1);
+              }else {
+              addMarker(myDestination,map,0);
+              }
+            }
+          ).catch(function (reject) {
+            console.log(reject);
+          });
+
+          }
+        }
+      }
+
+      function getSignals(){
+
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAwa2keG3Yb7-q1fAQuSoBuguNMX_TKnvk&callback=initMap">
+    </script>
+  </body>
+</html>
