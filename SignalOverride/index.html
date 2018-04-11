@@ -19,11 +19,11 @@
       #floating-panel {
         position: absolute;
         top: 10px;
-        left: 25%;
+        left: 40%;
         z-index: 5;
-        background-color: #fff;
+
         padding: 5px;
-        border: 1px solid #999;
+
         text-align: center;
         font-family: 'Roboto','sans-serif';
         line-height: 30px;
@@ -33,48 +33,25 @@
   </head>
   <body>
     <div id="floating-panel">
-    <b>Start: </b>
-    <select id="start">
-      <option value="chicago, il">Chicago</option>
-      <option value="st louis, mo">St Louis</option>
-      <option value="joplin, mo">Joplin, MO</option>
-      <option value="oklahoma city, ok">Oklahoma City</option>
-      <option value="amarillo, tx">Amarillo</option>
-      <option value="gallup, nm">Gallup, NM</option>
-      <option value="flagstaff, az">Flagstaff, AZ</option>
-      <option value="winona, az">Winona</option>
-      <option value="kingman, az">Kingman</option>
-      <option value="barstow, ca">Barstow</option>
-      <option value="san bernardino, ca">San Bernardino</option>
-      <option value="los angeles, ca">Los Angeles</option>
-    </select>
-    <b>End: </b>
-    <select id="end">
-      <option value="chicago, il">Chicago</option>
-      <option value="st louis, mo">St Louis</option>
-      <option value="joplin, mo">Joplin, MO</option>
-      <option value="oklahoma city, ok">Oklahoma City</option>
-      <option value="amarillo, tx">Amarillo</option>
-      <option value="gallup, nm">Gallup, NM</option>
-      <option value="flagstaff, az">Flagstaff, AZ</option>
-      <option value="winona, az">Winona</option>
-      <option value="kingman, az">Kingman</option>
-      <option value="barstow, ca">Barstow</option>
-      <option value="san bernardino, ca">San Bernardino</option>
-      <option value="los angeles, ca">Los Angeles</option>
-    </select>
+      <input type="button" value="Start Demo" onclick="startDemo()" id="demoButton">
+      <input type="button" value="Next Location" onclick="updateSignals()" id="nextButton">
     </div>
+
     <div id="map"></div>
     <script>
 
       var directionsDisplay;
       var directionsService;
       let polyline;
-      var allSignals = [{"latitude":18.55041,"longitude":73.8096},{"latitude":18.5493,"longitude":73.8117},{"latitude":18.516726,"longitude":73.856255},{"latitude":18.5300,"longitude":73.8531}];
+      let allSignals = [{"latitude":18.564836,"longitude":73.774525,"visited":0},{"latitude":18.560457,"longitude":73.788094,"visited":0},{"latitude":18.553145,"longitude":73.802850,"visited":0},{"latitude":18.551908,"longitude":73.804136,"visited":0},{"latitude":18.542259,"longitude":73.828350,"visited":0},{"latitude":18.534962,"longitude":73.839127,"visited":0}];
+      var ambulance = [{"latitude":18.573045,"longitude":73.762804},{"latitude":18.565511,"longitude":73.772673},{"latitude":18.564478,"longitude":73.775690},{"latitude":18.561315,"longitude":73.787374},{"latitude":18.554209,"longitude":73.801818},{"latitude":18.543068,"longitude":73.825650},{"latitude":18.530966,"longitude":73.846672}];
       var ambulanceLatitude = 18.5603;
       var ambulanceLongitude = 73.8092;
       var thresholdTime = 200;
+      var ambulanceIndex = 0;
+      var gMarkers = [];
       let map;
+      let i;
 
 
       function initMap() {
@@ -93,26 +70,43 @@
           calculateAndDisplayRoute(directionsService, directionsDisplay,'kalpataru estate,pimple gurav','sancheti');
           updateSignals();
         };
-        document.getElementById('start').addEventListener('change', onChangeHandler);
-        document.getElementById('end').addEventListener('change', onChangeHandler);
+      }
+      function startDemo(){
+        calculateAndDisplayRoute(directionsService, directionsDisplay,'balewadi stadium','sancheti');
+        document.getElementById('demoButton').style.visibility = "hidden";
       }
 
+
       function addMarker(location, map,override) {
-        // Add the marker at the clicked location, and add the next-available label
-        // from the array of alphabetical characters.
+        let length = Object.keys(allSignals).length;
+        if(override == 1){
+          for(j = 0; j < length;j++ ){
+            if(allSignals[j]['latitude'] === location['latitude'] && allSignals[j]['longitude'] === location['longitude']){
+              allSignals[j]['visited'] = 1;
+              console.log(j);
+              break;
+            }
+          }
+        }  
+        source = new google.maps.LatLng(location['latitude'],location['longitude']);
         if(override == 1){
           var marker = new google.maps.Marker({
-            position: location,
-            label: "Signal Override",
+            position: source,
+            label:{
+              text: "O"
+            } ,
             map: map
           });
         }else {
           var marker = new google.maps.Marker({
-            position: location,
-            label: "Normal operation",
+            position: source,
+            label:{
+              text: "N"
+            },
             map: map
           });
         }
+        gMarkers.push(marker);
 
       }
 
@@ -151,22 +145,28 @@
 
       function updateSignals(){
         let length = Object.keys(allSignals).length;
-        let estimatedTime = [];
+        var markers = gMarkers;
+        console.log(markers);
+        for(x = 0; x < markers.length; x++){
+          markers[x].setMap(null);
+        }
+        let origin = new google.maps.LatLng( ambulance[ambulanceIndex]['latitude'], ambulance[ambulanceIndex]['longitude'] );
+        ambulanceIndex = ambulanceIndex + 1;
         for(i = 0;i < length;i++){
           let estimatedTime = 1000;
           let myPosition = new google.maps.LatLng(allSignals[i]['latitude'],allSignals[i]['longitude']);
-          console.log(google.maps.geometry.poly.isLocationOnEdge(myPosition, polyline,100));
-          if(1 === 1) {
-            let origin = new google.maps.LatLng( ambulanceLatitude, ambulanceLongitude ); // using google.maps.LatLng class
+          //console.log(google.maps.geometry.poly.isLocationOnEdge(myPosition, polyline,100));
+          if(1 === 1 && allSignals[i]['visited'] == 0) {
             let myDestination = new google.maps.LatLng(allSignals[i]['latitude'],allSignals[i]['longitude']); // using string
-
+            let destination = allSignals[i];
             let directionsService = new google.maps.DirectionsService();
             let request = {
-              origin: origin, // LatLng|string
-              destination: myDestination, // LatLng|string
+              origin: origin,
+              destination: myDestination,
               travelMode: google.maps.DirectionsTravelMode.DRIVING
             };
             let estimatedTime;
+            let signals = allSignals;
             let routeIt = function () {
               return new Promise (function(resolve, reject) {
                   directionsService.route( request, function( response, status ) {
@@ -174,9 +174,8 @@
                       let point = response.routes[ 0 ].legs[ 0 ];
                       estimatedTime = (point.duration.value);
                       result = {
-                        point, estimatedTime
+                        point, estimatedTime, i
                       }
-                      console.log("There " + result.toString());
                       resolve(result);
                     }
                     else {
@@ -186,11 +185,11 @@
               });
             }
             routeIt().then(
-            function (results) {
+            function (result) {
               if(estimatedTime < thresholdTime){
-              addMarker(myDestination,map,1);
+                addMarker(destination,map,1);
               }else {
-              addMarker(myDestination,map,0);
+                addMarker(destination,map,0);
               }
             }
           ).catch(function (reject) {
