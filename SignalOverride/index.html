@@ -52,6 +52,7 @@
       var gMarkers = [];
       let map;
       let i;
+      let ambulanceLength = Object.keys(ambulance).length;
 
 
       function initMap() {
@@ -87,9 +88,22 @@
               break;
             }
           }
-        }  
+        }
         source = new google.maps.LatLng(location['latitude'],location['longitude']);
-        if(override == 1){
+        if(override === 2){
+          var marker = new google.maps.Marker({
+            position: source,
+            label:{
+              text: "A"
+            } ,
+            icon : 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+            map: map
+          });
+          gMarkers.push(marker);
+          return;
+        }
+
+        if(override === 1){
           var marker = new google.maps.Marker({
             position: source,
             label:{
@@ -106,6 +120,9 @@
             map: map
           });
         }
+        google.maps.event.addDomListener(marker, 'click', function() {
+        window.location.href = 'http://www.google.co.uk/';
+});
         gMarkers.push(marker);
 
       }
@@ -150,6 +167,13 @@
         for(x = 0; x < markers.length; x++){
           markers[x].setMap(null);
         }
+        if(ambulanceIndex == ambulanceLength){
+          alert("Demo done. Ambulance reached!");
+          document.getElementById('demoButton').style.visibility = "visible";
+          return;
+        }
+        addMarker(ambulance[ambulanceIndex],map,2);
+        //gMarkers = [];
         let origin = new google.maps.LatLng( ambulance[ambulanceIndex]['latitude'], ambulance[ambulanceIndex]['longitude'] );
         ambulanceIndex = ambulanceIndex + 1;
         for(i = 0;i < length;i++){
@@ -157,7 +181,7 @@
           let myPosition = new google.maps.LatLng(allSignals[i]['latitude'],allSignals[i]['longitude']);
           //console.log(google.maps.geometry.poly.isLocationOnEdge(myPosition, polyline,100));
           if(1 === 1 && allSignals[i]['visited'] == 0) {
-            let myDestination = new google.maps.LatLng(allSignals[i]['latitude'],allSignals[i]['longitude']); // using string
+            let myDestination = new google.maps.LatLng(allSignals[i]['latitude'],allSignals[i]['longitude']);
             let destination = allSignals[i];
             let directionsService = new google.maps.DirectionsService();
             let request = {
@@ -165,8 +189,7 @@
               destination: myDestination,
               travelMode: google.maps.DirectionsTravelMode.DRIVING
             };
-            let estimatedTime;
-            let signals = allSignals;
+            //let estimatedTime;
             let routeIt = function () {
               return new Promise (function(resolve, reject) {
                   directionsService.route( request, function( response, status ) {
@@ -177,6 +200,10 @@
                         point, estimatedTime, i
                       }
                       resolve(result);
+                    }
+                    else if (status === "OVER_QUERY_LIMIT") {
+                      console.log("oql");
+                      setTimeout(function(){i = i - 1;},2000);
                     }
                     else {
                       reject(status)
@@ -196,6 +223,10 @@
             console.log(reject);
           });
 
+          }
+          else {
+            let destination = allSignals[i];
+            addMarker(destination,map,0);
           }
         }
       }
