@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Directions service</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 40%;
+        z-index: 5;
+
+        padding: 5px;
+
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+    </style>
+  	<script src = "traffic.js"></script>
+  </head>
+  <body>
+    <div id="floating-panel">
+      <input type="button" value="Start Demo" onclick="startDemo()" id="demoButton">
+      <input type="button" value="Next Location" onclick="updateSignals()" id="nextButton">
+    </div>
+
+    <div id="map"></div>
+<!---    <script>
+
+      var directionsDisplay;
+      var directionsService;
+      let polyline;
+      let allSignals = [{"latitude":18.564836,"longitude":73.774525,"visited":0},{"latitude":18.560457,"longitude":73.788094,"visited":0},{"latitude":18.553145,"longitude":73.802850,"visited":0},{"latitude":18.551908,"longitude":73.804136,"visited":0},{"latitude":18.542259,"longitude":73.828350,"visited":0},{"latitude":18.534962,"longitude":73.839127,"visited":0}];
+      var ambulance = [{"latitude":18.573045,"longitude":73.762804},{"latitude":18.565511,"longitude":73.772673},{"latitude":18.564478,"longitude":73.775690},{"latitude":18.561315,"longitude":73.787374},{"latitude":18.554209,"longitude":73.801818},{"latitude":18.543068,"longitude":73.825650},{"latitude":18.530966,"longitude":73.846672}];
+      var ambulanceLatitude = 18.5603;
+      var ambulanceLongitude = 73.8092;
+      var thresholdTime = 200;
+      var ambulanceIndex = 0;
+      var gMarkers = [];
+      let map;
+      let i;
+      let ambulanceLength = Object.keys(ambulance).length;
+
+
+      function initMap() {
+        directionsService = new google.maps.DirectionsService;
+        directionsDisplay = new google.maps.DirectionsRenderer;
+        polyline = new google.maps.Polyline({
+          path: []
+        });
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 7,
+          center: {lat: 41.85, lng: -87.65}
+        });
+        directionsDisplay.setMap(map);
+
+        var onChangeHandler = function() {
+          calculateAndDisplayRoute(directionsService, directionsDisplay,'kalpataru estate,pimple gurav','sancheti');
+          updateSignals();
+        };
+      }
+      function startDemo(){
+        calculateAndDisplayRoute(directionsService, directionsDisplay,'balewadi stadium','sancheti');
+        document.getElementById('demoButton').style.visibility = "hidden";
+      }
+
+
+      function addMarker(location, map,override) {
+        let length = Object.keys(allSignals).length;
+        if(override == 1){
+          for(j = 0; j < length;j++ ){
+            if(allSignals[j]['latitude'] === location['latitude'] && allSignals[j]['longitude'] === location['longitude']){
+              allSignals[j]['visited'] = 1;
+              console.log(j);
+              break;
+            }
+          }
+        }
+        source = new google.maps.LatLng(location['latitude'],location['longitude']);
+        if(override === 2){
+          var marker = new google.maps.Marker({
+            position: source,
+            label:{
+              text: "A"
+            } ,
+            icon : 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+            map: map
+          });
+          gMarkers.push(marker);
+          return;
+        }
+
+        if(override === 1){
+          var marker = new google.maps.Marker({
+            position: source,
+            label:{
+              text: "O"
+            } ,
+            map: map
+          });
+        }else {
+          var marker = new google.maps.Marker({
+            position: source,
+            label:{
+              text: "N"
+            },
+            map: map
+          });
+        }
+        google.maps.event.addDomListener(marker, 'click', function() {
+        window.location = "traffic.html";
+});
+        gMarkers.push(marker);
+
+      }
+
+      function calculateAndDisplayRoute(directionsService, directionsDisplay,start,end) {
+        directionsService.route({
+          origin: start,
+          destination: end,
+          travelMode: 'DRIVING'
+        }, function(response, status) {
+          if (status === 'OK') {
+
+          var bounds = new google.maps.LatLngBounds();
+          var legs = response.routes[0].legs;
+          for (i = 0; i < legs.length; i++) {
+            var steps = legs[i].steps;
+            for (j = 0; j < steps.length; j++) {
+              var nextSegment = steps[j].path;
+              for (k = 0; k < nextSegment.length; k++) {
+                polyline.getPath().push(nextSegment[k]);
+                bounds.extend(nextSegment[k]);
+              }
+            }
+          }
+          directionsDisplay.setDirections(response);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        });
+      }
+      var hospital;
+      function getRoute(){
+        var source = 'shirine garden';
+        var destination = 'sancheti';
+        calculateAndDisplayRoute(directionsService,directionsDisplay,source,destination);
+      }
+
+      function updateSignals(){
+        let length = Object.keys(allSignals).length;
+        var markers = gMarkers;
+        console.log(markers);
+        for(x = 0; x < markers.length; x++){
+          markers[x].setMap(null);
+        }
+        if(ambulanceIndex == ambulanceLength){
+          alert("Demo done. Ambulance reached!");
+          document.getElementById('demoButton').style.visibility = "visible";
+          return;
+        }
+        addMarker(ambulance[ambulanceIndex],map,2);
+        //gMarkers = [];
+        let origin = new google.maps.LatLng( ambulance[ambulanceIndex]['latitude'], ambulance[ambulanceIndex]['longitude'] );
+        ambulanceIndex = ambulanceIndex + 1;
+        for(i = 0;i < length;i++){
+          let estimatedTime = 1000;
+          let myPosition = new google.maps.LatLng(allSignals[i]['latitude'],allSignals[i]['longitude']);
+          //console.log(google.maps.geometry.poly.isLocationOnEdge(myPosition, polyline,100));
+          if(1 === 1 && allSignals[i]['visited'] == 0) {
+            let myDestination = new google.maps.LatLng(allSignals[i]['latitude'],allSignals[i]['longitude']);
+            let destination = allSignals[i];
+            let directionsService = new google.maps.DirectionsService();
+            let request = {
+              origin: origin,
+              destination: myDestination,
+              travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };
+            //let estimatedTime;
+            let routeIt = function () {
+              return new Promise (function(resolve, reject) {
+                  directionsService.route( request, function( response, status ) {
+                    if ( status === 'OK' ) {
+                      let point = response.routes[ 0 ].legs[ 0 ];
+                      estimatedTime = (point.duration.value);
+                      result = {
+                        point, estimatedTime, i
+                      }
+                      resolve(result);
+                    }
+                    else if (status === "OVER_QUERY_LIMIT") {
+                      console.log("oql");
+                      setTimeout(function(){i = i - 1;},2000);
+                    }
+                    else {
+                      reject(status)
+                    }
+                  });
+              });
+            }
+            routeIt().then(
+            function (result) {
+              if(estimatedTime < thresholdTime){
+                addMarker(destination,map,1);
+              }else {
+                addMarker(destination,map,0);
+              }
+            }
+          ).catch(function (reject) {
+            console.log(reject);
+          });
+
+          }
+          else {
+            let destination = allSignals[i];
+            addMarker(destination,map,0);
+          }
+        }
+      }
+
+      function getSignals(){
+
+      }
+</script> -->
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAwa2keG3Yb7-q1fAQuSoBuguNMX_TKnvk&callback=initMap">
+    </script>
+  </body>
+</html>
