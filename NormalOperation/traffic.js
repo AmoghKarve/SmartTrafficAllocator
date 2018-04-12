@@ -14,6 +14,8 @@ var gMarkers = [];
 let map;
 let i;
 let ambulanceLength = Object.keys(ambulance).length;
+let signalsLength = Object.keys(allSignals).length;
+
 
 
 function initMap() {
@@ -36,6 +38,9 @@ function initMap() {
 function startDemo(){
 	calculateAndDisplayRoute(directionsService, directionsDisplay,'balewadi stadium','sancheti');
 	document.getElementById('demoButton').style.visibility = "hidden";
+	for(i=0;i<signalsLength;i++){
+		addMarker(allSignals[i],map,0,0);
+	}
 }
 
 var overrideOrNot = 0; //if 0 normal operation
@@ -64,6 +69,11 @@ function addMarker(location, map,override,timeToReach) {
 		return;
 	}
 
+	var infoWindowContent = [
+		'<div>' +
+				'<p>Estimated Time of ambulance arrival :'+ timeToReach + 's</p> <a href = "traffic.html">Traffic Signal Operation</a>' + '</div>'
+	];
+
 	if(override === 1){
 		var marker = new google.maps.Marker({
 			position: source,
@@ -81,11 +91,14 @@ function addMarker(location, map,override,timeToReach) {
 			map: map
 		});
 	}
+	var infoWindow = new google.maps.InfoWindow();
 	google.maps.event.addDomListener(marker, 'click', function() {
+		infoWindow.setContent(infoWindowContent[0]);
+		infoWindow.open(map, marker);
 		overrideOrNot = override;
 		localStorage.setItem("overrideOrNot", overrideOrNot);
-		localStorage.setItem("estimatedTime", timeToReach);	
-		window.location = "traffic.html";
+		localStorage.setItem("estimatedTime", timeToReach);
+		//window.location = "traffic.html";
 	});
 	gMarkers.push(marker);
 
@@ -217,7 +230,7 @@ function overrideSignal(estimatedTime) {
 	timeOverrideSignal[0] = parseInt(estimatedTime) + 10;
 	setSignal(signalSet);
 	keepgoing = true;
-	startOverride();	
+	startOverride();
 }
 var overrideCheck = 0;
 function loadPage(iteration) {
@@ -413,7 +426,7 @@ function update() {
 		$("#timer_2").html(ts[1]);
 		$("#timer_3").html(ts[1]);
 		$("#timer_4").html(ts[1]);
-		break;		
+		break;
 	}
 	if(keepgoing)
 		w = setTimeout(update, 1000);

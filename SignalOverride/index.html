@@ -52,7 +52,9 @@
       var gMarkers = [];
       let map;
       let i;
+      let overrideORnot;
       let ambulanceLength = Object.keys(ambulance).length;
+      let signalsLength = Object.keys(allSignals).length;
 
 
       function initMap() {
@@ -75,10 +77,13 @@
       function startDemo(){
         calculateAndDisplayRoute(directionsService, directionsDisplay,'balewadi stadium','sancheti');
         document.getElementById('demoButton').style.visibility = "hidden";
+        for(i=0;i<signalsLength;i++){
+          addMarker(allSignals[i],map,0,0);
+        }
       }
 
 
-      function addMarker(location, map,override) {
+      function addMarker(location, map,override,timeToReach) {
         let length = Object.keys(allSignals).length;
         if(override == 1){
           for(j = 0; j < length;j++ ){
@@ -103,6 +108,12 @@
           return;
         }
 
+        var infoWindowContent = [
+          '<div>' +
+              '<p>Estimated Time of ambulance arrival :'+ timeToReach + 's</p> <a href = "traffic.html">Traffic Signal Operation</a>' + '</div>'
+        ];
+
+
         if(override === 1){
           var marker = new google.maps.Marker({
             position: source,
@@ -120,9 +131,12 @@
             map: map
           });
         }
+        var infoWindow = new google.maps.InfoWindow();
         google.maps.event.addDomListener(marker, 'click', function() {
-        window.location.href = 'http://www.google.co.uk/';
-});
+          infoWindow.setContent(infoWindowContent[0]);
+          infoWindow.open(map, marker);
+        });
+
         gMarkers.push(marker);
 
       }
@@ -172,7 +186,7 @@
           document.getElementById('demoButton').style.visibility = "visible";
           return;
         }
-        addMarker(ambulance[ambulanceIndex],map,2);
+        addMarker(ambulance[ambulanceIndex],map,2,0);
         //gMarkers = [];
         let origin = new google.maps.LatLng( ambulance[ambulanceIndex]['latitude'], ambulance[ambulanceIndex]['longitude'] );
         ambulanceIndex = ambulanceIndex + 1;
@@ -214,9 +228,9 @@
             routeIt().then(
             function (result) {
               if(estimatedTime < thresholdTime){
-                addMarker(destination,map,1);
+                addMarker(destination,map,1,estimatedTime);
               }else {
-                addMarker(destination,map,0);
+                addMarker(destination,map,0,estimatedTime);
               }
             }
           ).catch(function (reject) {
@@ -226,7 +240,7 @@
           }
           else {
             let destination = allSignals[i];
-            addMarker(destination,map,0);
+            addMarker(destination,map,0,0);
           }
         }
       }
